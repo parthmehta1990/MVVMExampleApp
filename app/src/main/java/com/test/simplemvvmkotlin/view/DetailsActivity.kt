@@ -25,8 +25,9 @@ class DetailsActivity : AppCompatActivity() {
         }
 
         if (intent.hasExtra("Location")) {
-            //Do the API Call here
-            if (intent.getIntExtra("Location",0) != 0)
+            //Do the API Call here and
+            //checking that if viewmodel response is not null then we will not call the API again even on configuration change
+            if (intent.getIntExtra("Location",0) != 0 && detailViewModel.response.value==null)
                 detailViewModel.getWeather(intent.getIntExtra("Location",0)!!)
         }
 
