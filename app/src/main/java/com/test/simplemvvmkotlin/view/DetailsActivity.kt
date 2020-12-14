@@ -27,23 +27,27 @@ class DetailsActivity : AppCompatActivity() {
         if (intent.hasExtra("Location")) {
             //Do the API Call here and
             //checking that if viewmodel response is not null then we will not call the API again even on configuration change
-            if (intent.getIntExtra("Location",0) != 0 && detailViewModel.response.value==null)
-                detailViewModel.getWeather(intent.getIntExtra("Location",0)!!)
+            /* if (intent.getIntExtra("Location",0) != 0 && detailViewModel.response.value==null)
+                 detailViewModel.getWeather(intent.getIntExtra("Location",0)!!)*/
+
+            //For Timer based API call to handle configuration change
+            if (intent.getIntExtra("Location", 0) != 0)
+                detailViewModel.getWeather(intent.getIntExtra("Location", 0)!!)
         }
 
         detailViewModel.showProgress.observe(this, Observer {
 
-            if(it){
-                details_progress.visibility=View.VISIBLE
-            }else{
-                details_progress.visibility=View.GONE
+            if (it) {
+                details_progress.visibility = View.VISIBLE
+            } else {
+                details_progress.visibility = View.GONE
             }
         })
 
         detailViewModel.response.observe(this, Observer {
 
-            if(it!=null){
-                tv_temp.text=it.consolidated_weather[0].the_temp.toString()
+            if (it != null) {
+                tv_temp.text = it.consolidated_weather[0].the_temp.toString()
             }
 
         })

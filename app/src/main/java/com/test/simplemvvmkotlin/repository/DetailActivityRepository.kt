@@ -14,33 +14,36 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class DetailActivityRepository(val application: Application) {
 
-    val showProgress=MutableLiveData<Boolean>()
-
+    val showProgress = MutableLiveData<Boolean>()
     val weatherResponse = MutableLiveData<WeatherResponse>()
+    var lastRequestTime: Long = -1
 
-    fun searchWeather(worid: Int)
-    {
-        showProgress.value =true
+    fun searchWeather(worid: Int) {
+        //checking whether cueerent time and previous time difference to call API on configuration change
+        if ((System.currentTimeMillis() - lastRequestTime) < 10000){
+            return
+        }
+            showProgress.value = true
 
         //Network call
-        val retrofit= Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        val service=retrofit.create(WeatherNetwork::class.java)
+        val service = retrofit.create(WeatherNetwork::class.java)
 
         service.getWeather(worid).enqueue(object : Callback<WeatherResponse> {
             override fun onResponse(
                 call: Call<WeatherResponse>,
                 response: Response<WeatherResponse>
             ) {
-
+                lastRequestTime = System.currentTimeMillis()
                 //hide progressbar
-                showProgress.value =false
+                showProgress.value = false
 
                 //Handing the response
-                weatherResponse.value=response.body()
+                weatherResponse.value = response.body()
 
             }
 
@@ -49,9 +52,10 @@ class DetailActivityRepository(val application: Application) {
                 t: Throwable
             ) {
                 //hide Progressbar
-                showProgress.value =false
+                showProgress.value = false
                 //Make application parameter as val to access in Toast message
-                Toast.makeText(application,"Error occured while calling api", Toast.LENGTH_SHORT).show()
+                Toast.makeText(application, "Error occured while calling api", Toast.LENGTH_SHORT)
+                    .show()
 
 
             }
